@@ -336,6 +336,7 @@ class Metadata(object):
     maintainer = None
     maintainer_email = None
     license = None
+    license_expression = None
     description = None
     keywords = None
     download_url = None
@@ -377,7 +378,7 @@ class Metadata(object):
             return [item.strip() for item in list_str.split(',')]
         else:
             return None
-    
+
     def _normalise_requires_dist(self, req):
         extras = self._extract_extras(req)
         if extras:
@@ -398,7 +399,6 @@ class Metadata(object):
         optional_fields = [
             'Summary',
             'Home-page',
-            'License',
             'Keywords',
             'Author',
             'Author-email',
@@ -421,6 +421,17 @@ class Metadata(object):
                 # Indent following lines with 8 spaces:
                 value = '\n        '.join(value.splitlines())
                 fp.write(u"{}: {}\n".format(field, value))
+
+
+        license_expr = getattr(self, self._normalise_field_name("License-Expression"))
+        license = getattr(self, self._normalise_field_name("License"))
+        if license_expr:
+            # TODO: License-Expression requires Metadata-Version '2.4'
+            # Backfill it to the 'License' field for now
+            # fp.write(u'License-Expression: {}\n'.format(license_expr))
+            fp.write(u'License: {}\n'.format(license_expr))
+        elif license:
+            fp.write(u'License: {}\n'.format(license))
 
         for clsfr in self.classifiers:
             fp.write(u'Classifier: {}\n'.format(clsfr))
