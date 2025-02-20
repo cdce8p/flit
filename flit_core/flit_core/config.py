@@ -603,12 +603,12 @@ def read_pep621_metadata(proj, path) -> LoadedConfig:
                     raise ConfigError(
                         "[project.license] should specify file or text, not both"
                     )
-                license_f = license_tbl['file']
+                license_f = osp.normpath(license_tbl['file'])
                 if isabs_ish(license_f):
                     raise ConfigError(
                         f"License file path ({license_f}) cannot be an absolute path"
                     )
-                if ".." in license_f:
+                if license_f.startswith('..' + os.sep):
                     raise ConfigError(
                         f"License file path ({license_f}) cannot contain '..'"
                     )
